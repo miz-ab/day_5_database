@@ -1,4 +1,0 @@
-id,created_at,source,clean_text,polarity,subjectivity,language,favorite_count,retweet_count,original_author,screen_count,followers_count,friends_count,hashtags,user_mentions,place,place_coordinate
-1,3/6/2020,https://github.com/10xac,sample clean text,1,0.6,en,112,119,abebe,116,222,123,point_one,some one mentions ,addis ababa,megenagna
-2,2/6/2020,https://github.com/10xac,sample clean text,2,0.7,en,212,219,mizan,116,121,123,point_two,some one mentions ,addis ababa,"st, urael"
-3,4/6/2020,https://github.com/10xac,,2,0.8,en,312,319,behigu,216,230,90,point_three,some one mentions,addis ababa,bole
