@@ -1,4 +1,3 @@
-
 import numpy as np
 import pandas as pd
 import streamlit as st
@@ -7,7 +6,9 @@ from wordcloud import WordCloud
 import plotly.express as px
 from add_data import db_execute_fetch
 
+
 st.set_page_config(page_title="Day 5", layout="wide")
+
 
 def loadData():
     query = "select * from TweetInformation"
@@ -23,8 +24,8 @@ def selectHashTag():
 
 def selectLocAndAuth():
     df = loadData()
-    location = st.multiselect("choose Location of tweets", list(df['place_coordinate'].unique()))
-    lang = st.multiselect("choose Language of tweets", list(df['language'].unique()))
+    location = st.multiselect("choose Location of tweets", list(df['place'].unique()))
+    lang = st.multiselect("choose Language of tweets", list(df['lang'].unique()))
 
     if location and not lang:
         df = df[np.isin(df, location).any(axis=1)]
@@ -49,7 +50,7 @@ def barChart(data, title, X, Y):
 def wordCloud():
     df = loadData()
     cleanText = ''
-    for text in df['clean_text']:
+    for text in df['original_text']:
         tokens = str(text).lower().split()
 
         cleanText += " ".join(tokens) + " "
@@ -60,7 +61,7 @@ def wordCloud():
 
 def stBarChart():
     df = loadData()
-    dfCount = pd.DataFrame({'Tweet_count': df.groupby(['original_author'])['clean_text'].count()}).reset_index()
+    dfCount = pd.DataFrame({'Tweet_count': df.groupby(['original_author'])['original_text'].count()}).reset_index()
     dfCount["original_author"] = dfCount["original_author"].astype(str)
     dfCount = dfCount.sort_values("Tweet_count", ascending=False)
 
@@ -71,12 +72,12 @@ def stBarChart():
 
 def langPie():
     df = loadData()
-    dfLangCount = pd.DataFrame({'Tweet_count': df.groupby(['language'])['clean_text'].count()}).reset_index()
-    dfLangCount["language"] = dfLangCount["language"].astype(str)
+    dfLangCount = pd.DataFrame({'Tweet_count': df.groupby(['lang'])['original_text'].count()}).reset_index()
+    dfLangCount["lang"] = dfLangCount["lang"].astype(str)
     dfLangCount = dfLangCount.sort_values("Tweet_count", ascending=False)
     dfLangCount.loc[dfLangCount['Tweet_count'] < 10, 'lang'] = 'Other languages'
     st.title(" Tweets Language pie chart")
-    fig = px.pie(dfLangCount, values='Tweet_count', names='language', width=500, height=350)
+    fig = px.pie(dfLangCount, values='Tweet_count', names='lang', width=500, height=350)
     fig.update_traces(textposition='inside', textinfo='percent+label')
 
     colB1, colB2 = st.beta_columns([2.5, 1])
@@ -87,12 +88,13 @@ def langPie():
         st.write(dfLangCount)
 
 
-st.title("Data Display")
-selectHashTag()
-st.markdown("<p style='padding:10px; background-color:#000000;color:#00ECB9;font-size:16px;border-radius:10px;'>Section Break</p>", unsafe_allow_html=True)
-selectLocAndAuth()
-st.title("Data Visualizations")
-wordCloud()
-with st.beta_expander("Show More Graphs"):
-    stBarChart()
-    #langPie()
+def app():
+    st.title("Data Display")
+    selectHashTag()
+    st.markdown("<p style='padding:10px; background-color:#000000;color:#00ECB9;font-size:16px;border-radius:10px;'>Section Break</p>", unsafe_allow_html=True)
+    selectLocAndAuth()
+    st.title("Data Visualizations")
+    wordCloud()
+    with st.beta_expander("Show More Graphs"):
+        stBarChart()
+        langPie()

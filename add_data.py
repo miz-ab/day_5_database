@@ -64,6 +64,7 @@ def createTables(dbName: str) -> None:
 
     """
     conn, cur = DBConnect(dbName)
+    #sqlFile = 'day5_schema.sql'
     sqlFile = 'day5_schema.sql'
     fd = open(sqlFile, 'r')
     readSqlFile = fd.read()
@@ -141,12 +142,21 @@ def insert_to_tweet_table(dbName: str, df: pd.DataFrame, table_name: str) -> Non
     df = preprocess_df(df)
 
     for _, row in df.iterrows():
+        '''
         sqlQuery = f"""INSERT INTO {table_name} (created_at, source, clean_text, polarity, subjectivity, language,
                     favorite_count, retweet_count, original_author, screen_count, followers_count, friends_count,
                     hashtags, user_mentions, place, place_coordinate)
              VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
         data = (row[0], row[1], row[2], row[3], (row[4]), (row[5]), row[6], row[7], row[8], row[9], row[10], row[11],
                 row[12], row[13], row[14], row[15])
+        '''
+
+        sqlQuery = f"""INSERT INTO {table_name} (created_at, source, original_text, polarity, subjectivity, lang,
+                             favorite_count,retweet_count, original_author,followers_count, friends_count,possibly_sensitive,
+                            hashtags, user_mentions, place)
+                     VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
+        data = (row[0], row[1], row[2], row[3], (row[4]), (row[5]), row[6], row[7], row[8], row[9], row[10], row[11],
+                row[12], row[13], row[14])
 
         try:
             # Execute the SQL command
@@ -207,10 +217,11 @@ def db_execute_fetch(*args, many=False, tablename='', rdf=True, **kwargs) -> pd.
 
 
 if __name__ == "__main__":
-    #createDB(dbName='tweetInfodb')
-    #emojiDB(dbName='tweetInfodb')
+    createDB(dbName='tweetInfodb')
+    emojiDB(dbName='tweetInfodb')
     createTables(dbName='tweetinfodb')
 
-    df = pd.read_csv('fintech.csv')
+    #df = pd.read_csv('fintech.csv')
+    df = pd.read_csv('output.csv')
 
     insert_to_tweet_table(dbName='tweetInfodb', df=df, table_name='TweetInformation')
